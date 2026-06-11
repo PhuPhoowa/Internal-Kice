@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกการซ่อม Pylon Sign — Internal Kice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    font-family: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #F5F3EF; color: #1a1a1a; min-height: 100vh;
+  }
+
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 44px; height: 56px; border-bottom: 1px solid #E2DED8;
+    background: #F5F3EF; position: sticky; top: 0; z-index: 200;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px; font-size: 14px;
+    color: #1a1a1a; text-decoration: none; padding: 6px 10px; border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .back-btn:hover { background: #ECEAE6; }
+  .back-btn svg { width: 16px; height: 16px; }
+  .topbar-divider { width: 1px; height: 20px; background: #E2DED8; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .topbar-date { font-size: 14px; color: #1a1a1a; }
+
+  /* Container */
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 44px 80px; }
+
+  .page-eyebrow { font-size: 11px; font-weight: 500; color: #1a1a1a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .page-title { font-size: 26px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { font-size: 14px; color: #1a1a1a; margin-bottom: 28px; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .toolbar-left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .filter-btn {
+    padding: 7px 16px; font-size: 13px; font-family: inherit;
+    background: #FAFAF8; border: 1px solid #E2DED8; border-radius: 20px;
+    color: #1a1a1a; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  .filter-btn:hover { background: #ECEAE6; border-color: #C8C2BA; }
+  .filter-btn.active { background: #1a1a1a; border-color: #1a1a1a; color: #F5F3EF; }
+
+  .add-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 18px; font-size: 14px; font-family: inherit; font-weight: 600;
+    background: #1a1a1a; color: #F5F3EF; border: none; border-radius: 10px;
+    cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  }
+  .add-btn:hover { background: #333; }
+  .add-btn svg { width: 16px; height: 16px; }
+
+  .page-divider { border: none; border-top: 1px solid #E2DED8; margin-bottom: 20px; }
+  .stats-bar { font-size: 13px; color: #1a1a1a; margin-bottom: 16px; }
+  .stats-bar span { font-weight: 600; }
+
+  /* Loading */
+  .loading { text-align: center; padding: 60px 0; font-size: 14px; color: #1a1a1a; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; border: 1px solid #E2DED8; border-radius: 14px; background: #FAFAF8; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead tr { border-bottom: 1px solid #E2DED8; }
+  th {
+    padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600;
+    color: #1a1a1a; letter-spacing: 0.06em; text-transform: uppercase;
+    background: #F5F3EF; white-space: nowrap;
+  }
+  td { padding: 14px 16px; border-bottom: 1px solid #F0EDE8; vertical-align: middle; color: #1a1a1a; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #F5F3EF; }
+
+  .td-num { color: #1a1a1a; font-size: 13px; width: 48px; text-align: center; }
+  .td-location { font-weight: 500; white-space: nowrap; }
+  .td-detail { max-width: 220px; line-height: 1.5; }
+  .td-person { white-space: nowrap; }
+  .td-date { white-space: nowrap; font-size: 13px; }
+  .td-cost { white-space: nowrap; text-align: right; font-weight: 500; }
+  .td-img { white-space: nowrap; }
+
+  /* Status badge */
+  .badge-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap;
+  }
+  .badge-pending  { background: #FEF3C7; color: #92400E; }
+  .badge-done     { background: #D1FAE5; color: #065F46; }
+
+  /* Image thumbnails */
+  .img-thumb {
+    width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
+    cursor: pointer; border: 1px solid #E2DED8; transition: transform 0.15s;
+    margin-right: 4px;
+  }
+  .img-thumb:hover { transform: scale(1.08); }
+  .img-placeholder {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 6px; background: #ECEAE6;
+    color: #1a1a1a; font-size: 18px; margin-right: 4px;
+  }
+
+  /* Actions */
+  .action-btn {
+    padding: 6px 12px; border-radius: 7px; border: none;
+    font-size: 12px; font-family: inherit; font-weight: 500;
+    cursor: pointer; transition: background 0.15s; margin-right: 4px;
+  }
+  .btn-edit { background: #ECEAE6; color: #1a1a1a; }
+  .btn-edit:hover { background: #E2DED8; }
+  .btn-del  { background: #FEE2E2; color: #991B1B; }
+  .btn-del:hover { background: #FECACA; }
+
+  .empty-row td { text-align: center; padding: 60px; color: #1a1a1a; font-size: 14px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,18,16,0.55); z-index: 500;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #FAFAF8; border: 1px solid #E2DED8; border-radius: 20px;
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.18); position: relative;
+    animation: popIn 0.18s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px 16px; border-bottom: 1px solid #E2DED8; position: sticky; top: 0; background: #FAFAF8; z-index: 10;
+  }
+  .modal-title { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+  .modal-close {
+    width: 30px; height: 30px; border: none; background: #ECEAE6; border-radius: 8px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: #1a1a1a; font-size: 16px; transition: background 0.15s;
+  }
+  .modal-close:hover { background: #E2DED8; }
+  .modal-body { padding: 20px 24px 24px; }
+
+  /* Form */
+  .form-row { margin-bottom: 16px; }
+  .form-row label { display: block; font-size: 12px; font-weight: 600; color: #1a1a1a; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; padding: 10px 12px; font-size: 14px; font-family: inherit;
+    background: #F5F3EF; border: 1px solid #E2DED8; border-radius: 9px;
+    color: #1a1a1a; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    border-color: #A8A29A; box-shadow: 0 0 0 3px rgba(168,162,154,0.15);
+  }
+  .form-row textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .form-hint { font-size: 11px; color: #1a1a1a; margin-top: 4px; }
+
+  .form-footer {
+    display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+    padding-top: 20px; border-top: 1px solid #E2DED8;
+  }
+  .btn-cancel {
+    padding: 10px 20px; border-radius: 9px; border: 1px solid #E2DED8;
+    background: #FAFAF8; color: #1a1a1a; font-size: 14px; font-family: inherit;
+    font-weight: 500; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-cancel:hover { background: #ECEAE6; }
+  .btn-save {
+    padding: 10px 24px; border-radius: 9px; border: none;
+    background: #1a1a1a; color: #F5F3EF; font-size: 14px; font-family: inherit;
+    font-weight: 600; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-save:hover { background: #333; }
+  .btn-save:disabled { background: #C8C2BA; cursor: not-allowed; }
+
+  /* Image lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 900;
+    align-items: center; justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 10px; }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 36px; height: 36px; background: rgba(255,255,255,0.15);
+    border: none; border-radius: 50%; color: #fff; font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #1a1a1a; color: #F5F3EF; font-size: 13px;
+    padding: 10px 20px; border-radius: 10px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s; white-space: nowrap; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 700px) {
+    .topbar { padding: 0 20px; }
+    .container { padding: 32px 20px 60px; }
+    .form-2col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      กลับหน้าหลัก
+    </a>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title">บันทึกการซ่อม Pylon Sign</div>
+  </div>
+  <div class="topbar-date" id="today"></div>
+</div>
+
+<div class="container">
+  <div class="page-eyebrow">Building / Pylon Sign (LED)</div>
+  <h1 class="page-title">บันทึกการซ่อม Pylon Sign</h1>
+  <p class="page-sub">ติดตามสถานะการซ่อมและบำรุงรักษาป้าย LED</p>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="filter-btn active" onclick="setFilter('ทั้งหมด', this)">ทั้งหมด</button>
+      <button class="filter-btn" onclick="setFilter('รอดำเนินการ', this)">⏳ รอดำเนินการ</button>
+      <button class="filter-btn" onclick="setFilter('ดำเนินการเรียบร้อย', this)">✅ เรียบร้อย</button>
+    </div>
+    <button class="add-btn" onclick="openAddModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      เพิ่มรายการซ่อม
+    </button>
+  </div>
+
+  <hr class="page-divider">
+  <div class="stats-bar" id="statsBar"></div>
+
+  <div id="loadingEl" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+
+  <div class="table-wrap" id="tableWrap" style="display:none">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:center">#</th>
+          <th>สถานที่</th>
+          <th>รูปภาพ</th>
+          <th>ผู้แก้ไข</th>
+          <th>วันที่แจ้ง</th>
+          <th>วันที่ดำเนินการ</th>
+          <th>สถานะ</th>
+          <th>รายละเอียด</th>
+          <th style="text-align:right">ค่าดำเนินการ</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Form Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">เพิ่มรายการซ่อม</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="fId">
+
+      <div class="form-row">
+        <label>สถานที่</label>
+        <select id="fLocation">
+          <option value="">— เลือกฝั่ง —</option>
+          <option value="ฝั่งปั๊มน้ำมัน">ฝั่งปั๊มน้ำมัน</option>
+          <option value="ฝั่งตึก CP">ฝั่งตึก CP</option>
+        </select>
+      </div>
+
+      <div class="form-2col">
+        <div class="form-row">
+          <label>รูปภาพก่อนแก้ไข (URL)</label>
+          <input type="url" id="fImgBefore" placeholder="https://...">
+          <div class="form-hint">วางลิงค์รูปจาก Google Drive หรือ Imgur</div>
+        </div>
+        <div class="form-row">
+          <label>รูปภาพหลังแก้ไข (URL)</label>
+          <input type="url" id="fImgAfter" placeholder="https://...">
+          <div class="form-hint">วางลิงค์รูปจาก Google Drive หรือ Imgur</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>ผู้ทำการแก้ไข</label>
+        <select id="fPerson">
+          <option value="">— เลือกผู้แก้ไข —</option>
+          <option value="ทีมช่างอาคาร">ทีมช่างอาคาร</option>
+          <option value="บริษัทโฟกัสแอด">บริษัทโฟกัสแอด</option>
+          <option value="บริษัทบอร์ดเวล">บริษัทบอร์ดเวล</option>
+        </select>
+      </div>
+
+      <div class="form-2col">
+        <div class="form-row">
+          <label>วันที่แจ้ง</label>
+          <input type="date" id="fDateReport">
+        </div>
+        <div class="form-row">
+          <label>วันที่ดำเนินการ</label>
+          <input type="date" id="fDateDone">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>สถานะการดำเนินการ</label>
+        <select id="fStatus">
+          <option value="รอดำเนินการ">⏳ รอดำเนินการ</option>
+          <option value="ดำเนินการเรียบร้อย">✅ ดำเนินการเรียบร้อย</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>รายละเอียดอุปกรณ์ที่แก้ไข</label>
+        <textarea id="fDetail" placeholder="เช่น เปลี่ยน LED module แถวที่ 3 จำนวน 5 ชิ้น..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>ค่าดำเนินการ (รวม VAT)</label>
+        <input type="text" id="fCost" placeholder="เช่น 15,000.00">
+      </div>
+
+      <div class="form-footer">
+        <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+        <button class="btn-save" id="btnSave" onclick="saveRecord()">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="preview">
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbz3aGo9YVNQQK-1A2Arl2GPA1z4CTSk2yr6Yjr6Pc89uqPyHDWpWyvHLjZKa1Fi06zChg/exec';
+
+let allRecords = [];
+let activeFilter = 'ทั้งหมด';
+let editingId = null;
+
+// ── Load data ──
+async function loadData() {
+  try {
+    const res = await fetch(API);
+    const json = await res.json();
+    allRecords = json.data || [];
+    renderTable();
+  } catch(e) {
+    document.getElementById('loadingEl').textContent = '❌ โหลดข้อมูลไม่ได้ กรุณาลองใหม่';
+  }
+}
+
+// ── Render ──
+function renderTable() {
+  const filtered = activeFilter === 'ทั้งหมด'
+    ? allRecords
+    : allRecords.filter(r => r['สถานะ'] === activeFilter);
+
+  document.getElementById('loadingEl').style.display = 'none';
+  document.getElementById('tableWrap').style.display = 'block';
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="10">ไม่มีรายการ</td></tr>';
+    document.getElementById('statsBar').innerHTML = `แสดง <span>0</span> รายการ`;
+    return;
+  }
+
+  filtered.forEach(r => {
+    const statusClass = r['สถานะ'] === 'ดำเนินการเรียบร้อย' ? 'badge-done' : 'badge-pending';
+    const imgBefore = r['รูปก่อน'] ? `<img class="img-thumb" src="${toDirectImg(r['รูปก่อน'])}" onclick="openLightbox('${toDirectImg(r['รูปก่อน'])}')" title="ก่อน">` : `<span class="img-placeholder" title="ยังไม่มีรูปก่อน">📷</span>`;
+    const imgAfter  = r['รูปหลัง'] ? `<img class="img-thumb" src="${toDirectImg(r['รูปหลัง'])}" onclick="openLightbox('${toDirectImg(r['รูปหลัง'])}')" title="หลัง">` : `<span class="img-placeholder" title="ยังไม่มีรูปหลัง">📷</span>`;
+    const cost = r['ค่าดำเนินการ'] ? `฿${r['ค่าดำเนินการ']}` : '—';
+    const dateDone = r['วันที่ดำเนินการ'] || '—';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-num">${r['ลำดับ']}</td>
+      <td class="td-location">${r['สถานที่']}</td>
+      <td class="td-img">${imgBefore}${imgAfter}</td>
+      <td class="td-person">${r['ผู้แก้ไข']}</td>
+      <td class="td-date">${formatDate(r['วันที่แจ้ง'])}</td>
+      <td class="td-date">${formatDate(dateDone)}</td>
+      <td><span class="badge-status ${statusClass}">${r['สถานะ']}</span></td>
+      <td class="td-detail">${r['รายละเอียด'] || '—'}</td>
+      <td class="td-cost">${cost}</td>
+      <td>
+        <button class="action-btn btn-edit" onclick="openEditModal(${r['ลำดับ']})">แก้ไข</button>
+        <button class="action-btn btn-del"  onclick="deleteRecord(${r['ลำดับ']})">ลบ</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const total = allRecords.length;
+  const pending = allRecords.filter(r => r['สถานะ'] === 'รอดำเนินการ').length;
+  document.getElementById('statsBar').innerHTML =
+    `ทั้งหมด <span>${total}</span> รายการ &nbsp;·&nbsp; รอดำเนินการ <span style="color:#92400E">${pending}</span> รายการ`;
+}
+
+// ── Filter ──
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+// ── Modal: Add ──
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'เพิ่มรายการซ่อม';
+  document.getElementById('fId').value = '';
+  document.getElementById('fLocation').value = '';
+  document.getElementById('fImgBefore').value = '';
+  document.getElementById('fImgAfter').value = '';
+  document.getElementById('fPerson').value = '';
+  document.getElementById('fDateReport').value = todayISO();
+  document.getElementById('fDateDone').value = '';
+  document.getElementById('fStatus').value = 'รอดำเนินการ';
+  document.getElementById('fDetail').value = '';
+  document.getElementById('fCost').value = '';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ── Modal: Edit ──
+function openEditModal(id) {
+  const r = allRecords.find(x => String(x['ลำดับ']) === String(id));
+  if (!r) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'แก้ไขรายการซ่อม';
+  document.getElementById('fId').value = r['ลำดับ'];
+  document.getElementById('fLocation').value = r['สถานที่'];
+  document.getElementById('fImgBefore').value = r['รูปก่อน'] || '';
+  document.getElementById('fImgAfter').value = r['รูปหลัง'] || '';
+  document.getElementById('fPerson').value = r['ผู้แก้ไข'];
+  document.getElementById('fDateReport').value = toISO(r['วันที่แจ้ง']);
+  document.getElementById('fDateDone').value = toISO(r['วันที่ดำเนินการ']);
+  document.getElementById('fStatus').value = r['สถานะ'];
+  document.getElementById('fDetail').value = r['รายละเอียด'] || '';
+  document.getElementById('fCost').value = r['ค่าดำเนินการ'] || '';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+// ── Save ──
+async function saveRecord() {
+  const location = document.getElementById('fLocation').value;
+  const person   = document.getElementById('fPerson').value;
+  const dateRep  = document.getElementById('fDateReport').value;
+  const status   = document.getElementById('fStatus').value;
+
+  if (!location || !person || !dateRep) {
+    showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบ');
+    return;
+  }
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = 'กำลังบันทึก...';
+
+  const payload = {
+    action:       editingId ? 'update' : 'add',
+    ลำดับ:        editingId || '',
+    สถานที่:      location,
+    รูปก่อน:      document.getElementById('fImgBefore').value,
+    รูปหลัง:      document.getElementById('fImgAfter').value,
+    ผู้แก้ไข:     person,
+    วันที่แจ้ง:   dateRep,
+    วันที่ดำเนินการ: document.getElementById('fDateDone').value,
+    สถานะ:        status,
+    รายละเอียด:   document.getElementById('fDetail').value,
+    ค่าดำเนินการ: document.getElementById('fCost').value,
+  };
+
+  try {
+    await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    closeModal();
+    showToast(editingId ? 'แก้ไขเรียบร้อย ✓' : 'เพิ่มรายการเรียบร้อย ✓');
+    await loadData();
+  } catch(e) {
+    showToast('เกิดข้อผิดพลาด กรุณาลองใหม่');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'บันทึก';
+  }
+}
+
+// ── Delete ──
+async function deleteRecord(id) {
+  if (!confirm(`ยืนยันลบรายการที่ ${id}?`)) return;
+  try {
+    await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'delete', ลำดับ: id }),
+    });
+    showToast('ลบรายการเรียบร้อย');
+    await loadData();
+  } catch(e) {
+    showToast('เกิดข้อผิดพลาด');
+  }
+}
+
+// ── Lightbox ──
+function openLightbox(url) { document.getElementById('lightboxImg').src = url; document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox()   { document.getElementById('lightbox').classList.remove('open'); document.getElementById('lightboxImg').src = ''; }
+
+// ── Helpers ──
+function toDirectImg(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w200` : url;
+}
+function formatDate(str) {
+  if (!str || str === '—') return '—';
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`;
+}
+function toISO(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  if (isNaN(d)) return '';
+  return d.toISOString().split('T')[0];
+}
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeLightbox(); } });
+
+// Date topbar
+const d = new Date();
+const days   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+document.getElementById('today').textContent =
+  `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()+543}`;
+
+loadData();
+</script>
+</body>
+</html>
