@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Management — Internal Kice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 44px; height: 58px;
+    background: #1E3A8A;
+    position: sticky; top: 0; z-index: 200;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 14px; color: #E4E8F5; text-decoration: none;
+    padding: 6px 10px; border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .back-btn:hover { background: #485FA1; color: #ffffff; }
+  .back-btn svg { width: 16px; height: 16px; }
+  .topbar-divider { width: 1px; height: 20px; background: #BFDBFE; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: #FFFFFF; }
+  .topbar-date { font-size: 14px; color: #E4E8F5; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 48px 44px 80px; }
+
+  .page-eyebrow {
+    font-size: 11px; font-weight: 500; color: #1e1e1e;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .page-title { font-size: 26px; font-weight: 600; color: #1e1e1e; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .page-sub { font-size: 14px; color: #1e1e1e; margin-bottom: 24px; }
+
+  .search-wrap { position: relative; margin-bottom: 14px; }
+  .search-icon {
+    position: absolute; left: 14px; top: 59%; transform: translateY(-50%);
+    color: #7A7A7A; pointer-events: none;
+  }
+  .search-icon svg { width: 17px; height: 17px; }
+  .search-input {
+    width: 100%; padding: 11px 16px 11px 42px;
+    font-size: 14px; font-family: inherit;
+    background: #FFFFFF; border: 1px solid #8798AB; border-radius: 10px;
+    color: #1e1e1e; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input::placeholder { color: #94A3B8; }
+  .search-input:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(168,162,154,0.15); }
+
+  .filter-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .filter-btn {
+    padding: 6px 14px; font-size: 13px; font-family: inherit;
+    background: #FFFFFF; border: 1px solid #d6d6d6; border-radius: 20px;
+    color: #64748B; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .filter-btn:hover { background: #e8e8e8; border-color: #1e1e1e; color: #1a1a1a; }
+  .filter-btn.active { background: #2C2C2C; border-color: #1a1a1a; color: #F5F3EF; }
+
+  .page-divider { border: none; border-top: 1px solid #cccccc; margin-bottom: 20px; }
+  .stats-bar { font-size: 13px; color: #1a1a1a; margin-bottom: 16px; }
+  .stats-bar span { color: #1a1a1a; font-weight: 600; }
+
+  .doc-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .doc-row {
+    background: #FFFFFF; border: 1px solid #d6d6d6; border-radius: 8px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 14px;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .doc-row:hover { border-color: #1e1e1e; background: #e8e8e8; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .doc-row.hidden { display: none; }
+
+  .doc-row-name { flex: 1; font-size: 14px; font-weight: 400; color: #1e1e1e; line-height: 1.4; }
+
+  .doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .doc-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 7px 13px; border-radius: 8px; border: none;
+    font-size: 13px; font-family: inherit; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.15s, color 0.15s; white-space: nowrap;
+  }
+  .doc-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .doc-btn-view { background: #ffffff; color: #1a1a1a; }
+  .doc-btn-view:hover { background: #CECED6; }
+  .doc-btn-dl { background: #1E3A8A; color: #FFFFFF; }
+  .doc-btn-dl:hover { background: #0B1B47; }
+
+  .no-result { display: none; text-align: center; padding: 64px 0; font-size: 14px; color: #94A3B8; }
+
+  /* PDF Modal */
+  .pdf-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,18,16,0.7);
+    z-index: 500; align-items: center; justify-content: center; padding: 20px;
+  }
+  .pdf-overlay.open { display: flex; }
+
+  .pdf-modal {
+    background: #FFFFFF; border-radius: 16px;
+    width: 100%; max-width: 900px; height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25); overflow: hidden;
+    animation: popIn 0.18s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.97) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .pdf-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid #DBEAFE; flex-shrink: 0;
+  }
+  .pdf-title {
+    font-size: 14px; font-weight: 600; color: #1E3A8A;
+    flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 16px;
+  }
+  .pdf-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .pdf-action-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 7px 13px; border-radius: 8px; border: none;
+    font-size: 13px; font-family: inherit; font-weight: 500;
+    cursor: pointer; text-decoration: none; transition: background 0.15s;
+  }
+  .pdf-action-btn svg { width: 14px; height: 14px; }
+  .pdf-dl-btn { background: #1E3A8A; color: #FFFFFF; }
+  .pdf-dl-btn:hover { background: #1E40AF; }
+  .pdf-close-btn { background: #DBEAFE; color: #64748B; }
+  .pdf-close-btn:hover { background: #BFDBFE; color: #1a1a1a; }
+
+  .pdf-body { flex: 1; overflow: hidden; }
+  .pdf-body iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  @media (max-width: 600px) {
+    .topbar { padding: 0 20px; }
+    .container { padding: 32px 20px 60px; }
+    .doc-row { flex-wrap: wrap; gap: 10px; }
+    .doc-actions { width: 100%; justify-content: flex-end; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      กลับหน้าหลัก
+    </a>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title">Knowledge Management</div>
+  </div>
+  <div class="topbar-date" id="today"></div>
+</div>
+
+<div class="container">
+  <div class="page-eyebrow">คลังความรู้</div>
+  <h1 class="page-title">Knowledge Management</h1>
+  <p class="page-sub">คู่มือการใช้งานและแก้ปัญหาสำหรับทีม</p>
+
+  <div class="search-wrap">
+    <div class="search-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+    </div>
+    <input class="search-input" type="text" id="searchInput" placeholder="ค้นหาชื่อเอกสาร..." oninput="applyFilters()">
+  </div>
+
+  <div class="filter-wrap" id="filterWrap"></div>
+  <hr class="page-divider">
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="doc-list" id="docList"></div>
+  <div class="no-result" id="noResult">ไม่พบเอกสารที่ค้นหา</div>
+</div>
+
+<!-- PDF Modal -->
+<div class="pdf-overlay" id="pdfOverlay" onclick="closePdfModal(event)">
+  <div class="pdf-modal">
+    <div class="pdf-header">
+      <div class="pdf-title" id="pdfTitle"></div>
+      <div class="pdf-header-actions">
+        <a class="pdf-action-btn pdf-dl-btn" id="pdfDlBtn" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          ดาวน์โหลด
+        </a>
+        <button class="pdf-action-btn pdf-close-btn" onclick="closePdfBtn()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          ปิด
+        </button>
+      </div>
+    </div>
+    <div class="pdf-body">
+      <iframe id="pdfFrame" src="" title="PDF Viewer" allow="autoplay"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── helper: แปลง Google Drive share link → preview / download ──
+function drivePreview(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/file/d/${m[1]}/preview` : url;
+}
+function driveDownload(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/uc?export=download&id=${m[1]}` : url;
+}
+
+// ════════════════════════════════════════════════════════════
+//  รายการเอกสาร — เพิ่ม/แก้ไขตรงนี้
+//  วางลิงค์ Google Drive share ได้เลย ไม่ต้องแปลง
+// ════════════════════════════════════════════════════════════
+const docs = [
+  { cat: "Accountant", name: "การเข้าตรวจสอบอุปกรณ์ของทางบัญชีประจำเดือน",                        url: "https://drive.google.com/file/d/1pn_sUBjaeN0bKVLUIW-6ScNiu05o_Yfw/view?usp=sharing" },
+  { cat: "Accountant", name: "การถ่ายรูปค่าไฟฟ้าของ True AIS DTac ทุกวันที่ 25 ของเดือน",        url: "https://drive.google.com/file/d/1SeXHjm4JsuTHZJtP1Ce7pcbOo4VIxEcv/view?usp=sharing" },
+  { cat: "Accountant", name: "การทำเอกสารค่า Internet True และค่าโทรศัพท์ True รายเดือน",         url: "https://drive.google.com/file/d/1P_PGEq6MKKb_y0iiqtuzd93ksqySvExV/view?usp=sharing" },
+  { cat: "AV",         name: "การตั้งค่าระบบไมค์โครโฟนที่ Meeting",                               url: "https://drive.google.com/file/d/1bUez3I-RX5tRujHVvxm-5hjqWaSrS_Cu/view?usp=sharing" },
+  { cat: "Building",   name: "การเข้าอาคารเพื่อมาซ่อมหรือเปลี่ยนอุปกรณ์ของ True หรือ Vendor อื่นๆ", url: "https://drive.google.com/file/d/19-_9mQ0NPJ68BuDA9s5dZcrbBpsaDBJJ/view?usp=sharing" },
+  { cat: "Building",   name: "หลักการแจ้งงานเวลาป้าย Pylon Sign เสีย",                            url: "https://drive.google.com/file/d/12fyJXZavBQU-G6ioq67FT02czKG13J43/view?usp=sharing" },
+  { cat: "CAD",        name: "Renew License AutoCAD at Kice",                                       url: "https://drive.google.com/file/d/1A_ZOQRrCKmC8yHJFFPOEn14lWFY5P3rg/view?usp=sharing" },
+  { cat: "Comanche",   name: "การเบิกอุปกรณ์สำนักงาน",                                            url: "https://drive.google.com/file/d/17h8mM7ghwpEEpjhsC_kIB0D9xAQZANmW/view?usp=sharing" },
+  { cat: "Comanche",   name: "การยกเลิกสิทธ์การแก้ไขใน Receive Order บน Comanche Inventory",      url: "https://drive.google.com/file/d/1agnKE4T2Bwfg55vGsVhcmDx-pKtEyt19/view?usp=sharing" },
+  { cat: "Comanche",   name: "ดึง Report Item จาก Inventory Comanche",                             url: "https://drive.google.com/file/d/1nOK6wiGvnSYm7eLHm3ntiOlwN7zxeiSv/view?usp=sharing" },
+  { cat: "Comanche",   name: "ทำลายเซ็นดิจิตัลลง Comanche",                                       url: "https://drive.google.com/file/d/1R89ldHPgC8ymQlP1MKTp4qa96kAg-Map/view?usp=sharing" },
+  { cat: "Comanche",   name: "โปรแกรม Comanche",                                                   url: "https://drive.google.com/file/d/1YY8I1p1EYiG-YpomatKme5x7Xw2MiDlE/view?usp=sharing" },
+  { cat: "Comanche",   name: "ออก PR สั่งซื้อของผ่านระบบ Comanche",                               url: "https://drive.google.com/file/d/1Nqrg0QZWF5zoAaEdleFcdDeJ_PsDI16m/view?usp=sharing" },
+  { cat: "Computer",   name: "Access Control Front Office",                                         url: "https://drive.google.com/file/d/14X2wd1zUMtkYQMfmfReaDIMAivkesTFx/view?usp=sharing" },
+  { cat: "Computer",   name: "การสร้าง Shared Folder 10.31.10.10",                                 url: "https://drive.google.com/file/d/10qwKSn7p4muS6ru_X1i30KXfdo5BmlIh/view?usp=sharing" },
+  { cat: "Computer",   name: "ระบบจองรถ",                                                          url: "https://drive.google.com/file/d/1BAfEbTNShQ9TEJW1IXuIOUIEV7S_Wk0F/view?usp=sharing" },
+  { cat: "Contract",   name: "EzMemo inter font Final",                                             url: "https://drive.google.com/file/d/1dg8y1Ne60uyYCunWBO4y5zeLylE9sjYr/view?usp=sharing" },
+  { cat: "Email",      name: "Backup Email",                                                        url: "https://drive.google.com/file/d/1jl5k4oXOXEsItJaZw-TiVQJ8Yd9-Vu7C/view?usp=sharing" },
+  { cat: "Email",      name: "การแจ้งขอ Email @cpland.co.th ให้พนักงานใหม่",                      url: "https://drive.google.com/file/d/1ltNff0Ul-yB6P4AV4pn2-qpQeNWLurZ6/view?usp=sharing" },
+  { cat: "Food Hall",  name: "Verifone VX520 ขึ้น Bach full must settle",                          url: "https://drive.google.com/file/d/15SxwdJLeZgcDdYt2T_xbP67CGJmoGrcy/view?usp=sharing" },
+  { cat: "Food Hall",  name: "การปิดผลัดวันเครื่อง POS เครื่องเติมเงิน เครื่อง SC และ Gen ข้อมูล", url: "https://drive.google.com/file/d/1ibuDO2qBZxSF9dCg1pzmwzvH3b7_9Tui/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น P400 NOT CONNECT",             url: "https://drive.google.com/file/d/10480zD1FSnyuPyJK4Zif2o4LU77CpiFV/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น TAMPER Please Enter Password", url: "https://drive.google.com/file/d/1b3yC0lmuV9J8dQW6CvOEY1C3loV1EWVD/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น P400 NOT CONNECT (2)",        url: "https://drive.google.com/file/d/1MOVM0m609oCEw_WT-45R533MknD7EQoW/view?usp=sharing" },
+];
+
+// ── หมวดหมู่ ──
+const allCats = ['ทั้งหมด', ...new Set(docs.map(d => d.cat))];
+let activeCat = 'ทั้งหมด';
+
+// ── Filter buttons ──
+const filterWrap = document.getElementById('filterWrap');
+allCats.forEach(cat => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn' + (cat === 'ทั้งหมด' ? ' active' : '');
+  const count = cat === 'ทั้งหมด' ? docs.length : docs.filter(d => d.cat === cat).length;
+  btn.textContent = `${cat} (${count})`;
+  btn.onclick = () => {
+    activeCat = cat;
+    filterWrap.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  };
+  filterWrap.appendChild(btn);
+});
+
+// ── Render rows ──
+const list = document.getElementById('docList');
+const noResult = document.getElementById('noResult');
+
+docs.forEach((doc, i) => {
+  const row = document.createElement('div');
+  row.className = 'doc-row';
+  row.dataset.cat = doc.cat;
+  row.dataset.search = (doc.name + ' ' + doc.cat).toLowerCase();
+  row.innerHTML = `
+    <div class="doc-row-name">${doc.name}</div>
+    <div class="doc-actions">
+      <button class="doc-btn doc-btn-view" onclick="openPdf(${i})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        ดู
+      </button>
+      <a class="doc-btn doc-btn-dl" href="${driveDownload(doc.url)}" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        โหลด
+      </a>
+    </div>
+  `;
+  list.appendChild(row);
+});
+
+// ── Filter + Search ──
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const rows = list.querySelectorAll('.doc-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const catMatch = activeCat === 'ทั้งหมด' || row.dataset.cat === activeCat;
+    const searchMatch = row.dataset.search.includes(q);
+    const show = catMatch && searchMatch;
+    row.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  noResult.style.display = visible === 0 ? 'block' : 'none';
+  document.getElementById('statsBar').innerHTML =
+    `แสดง <span>${visible}</span> จาก <span>${docs.length}</span> เอกสาร`;
+}
+applyFilters();
+
+// ── PDF Modal ──
+function openPdf(i) {
+  const doc = docs[i];
+  document.getElementById('pdfTitle').textContent = doc.name;
+  document.getElementById('pdfFrame').src = drivePreview(doc.url);
+  document.getElementById('pdfDlBtn').href = driveDownload(doc.url);
+  document.getElementById('pdfOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePdfBtn() {
+  document.getElementById('pdfOverlay').classList.remove('open');
+  document.getElementById('pdfFrame').src = '';
+  document.body.style.overflow = '';
+}
+function closePdfModal(e) {
+  if (e.target === document.getElementById('pdfOverlay')) closePdfBtn();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePdfBtn(); });
+
+// ── Date ──
+const d = new Date();
+const days   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+document.getElementById('today').textContent =
+  `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+</script>
+
+</body>
+</html>
