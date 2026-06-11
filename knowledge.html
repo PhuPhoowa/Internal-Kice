@@ -17,7 +17,6 @@
     min-height: 100vh;
   }
 
-  /* ── Topbar ── */
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 44px; height: 56px;
@@ -38,7 +37,6 @@
   .topbar-title { font-size: 15px; font-weight: 600; color: #2C2C2C; }
   .topbar-date { font-size: 14px; color: #9E9890; }
 
-  /* ── Container ── */
   .container { max-width: 760px; margin: 0 auto; padding: 48px 44px 80px; }
 
   .page-eyebrow {
@@ -48,7 +46,6 @@
   .page-title { font-size: 26px; font-weight: 600; color: #1E1E1E; letter-spacing: -0.02em; margin-bottom: 6px; }
   .page-sub { font-size: 14px; color: #7A7470; margin-bottom: 24px; }
 
-  /* ── Search ── */
   .search-wrap { position: relative; margin-bottom: 14px; }
   .search-icon {
     position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -65,7 +62,6 @@
   .search-input::placeholder { color: #B8B2AA; }
   .search-input:focus { border-color: #A8A29A; box-shadow: 0 0 0 3px rgba(168,162,154,0.15); }
 
-  /* ── Filter tags ── */
   .filter-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
   .filter-btn {
     padding: 6px 14px; font-size: 13px; font-family: inherit;
@@ -80,34 +76,17 @@
   .stats-bar { font-size: 13px; color: #A8A29A; margin-bottom: 16px; }
   .stats-bar span { color: #2C2C2C; font-weight: 600; }
 
-  /* ── Doc list ── */
   .doc-list { display: flex; flex-direction: column; gap: 8px; }
 
-  /* ── Doc row ── */
   .doc-row {
-    background: #FAFAF8;
-    border: 1px solid #E2DED8;
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    background: #FAFAF8; border: 1px solid #E2DED8; border-radius: 12px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 14px;
     transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   }
-  .doc-row:hover {
-    border-color: #C8C2BA;
-    background: #F0EDE8;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
+  .doc-row:hover { border-color: #C8C2BA; background: #F0EDE8; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
   .doc-row.hidden { display: none; }
 
-  .doc-row-name {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    color: #1E1E1E;
-    line-height: 1.4;
-  }
+  .doc-row-name { flex: 1; font-size: 14px; font-weight: 500; color: #1E1E1E; line-height: 1.4; }
 
   .doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
   .doc-btn {
@@ -115,8 +94,7 @@
     padding: 7px 13px; border-radius: 8px; border: none;
     font-size: 13px; font-family: inherit; font-weight: 500;
     cursor: pointer; text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
+    transition: background 0.15s, color 0.15s; white-space: nowrap;
   }
   .doc-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
   .doc-btn-view { background: #ECEAE6; color: #2C2C2C; }
@@ -124,18 +102,13 @@
   .doc-btn-dl { background: #2C2C2C; color: #F5F3EF; }
   .doc-btn-dl:hover { background: #1E1E1E; }
 
-  /* no result */
-  .no-result {
-    display: none; text-align: center;
-    padding: 64px 0; font-size: 14px; color: #B8B2AA;
-  }
+  .no-result { display: none; text-align: center; padding: 64px 0; font-size: 14px; color: #B8B2AA; }
 
-  /* ── PDF Viewer Modal ── */
+  /* PDF Modal */
   .pdf-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(20,18,16,0.7);
-    z-index: 500; align-items: center; justify-content: center;
-    padding: 20px;
+    z-index: 500; align-items: center; justify-content: center; padding: 20px;
   }
   .pdf-overlay.open { display: flex; }
 
@@ -143,13 +116,12 @@
     background: #FAFAF8; border-radius: 16px;
     width: 100%; max-width: 900px; height: 90vh;
     display: flex; flex-direction: column;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
-    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25); overflow: hidden;
     animation: popIn 0.18s ease;
   }
   @keyframes popIn {
     from { opacity: 0; transform: scale(0.97) translateY(10px); }
-    to   { opacity: 1; transform: scale(1)    translateY(0); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
   }
 
   .pdf-header {
@@ -165,8 +137,7 @@
     display: flex; align-items: center; gap: 5px;
     padding: 7px 13px; border-radius: 8px; border: none;
     font-size: 13px; font-family: inherit; font-weight: 500;
-    cursor: pointer; text-decoration: none;
-    transition: background 0.15s;
+    cursor: pointer; text-decoration: none; transition: background 0.15s;
   }
   .pdf-action-btn svg { width: 14px; height: 14px; }
   .pdf-dl-btn { background: #2C2C2C; color: #F5F3EF; }
@@ -216,10 +187,8 @@
   </div>
 
   <div class="filter-wrap" id="filterWrap"></div>
-
   <hr class="page-divider">
   <div class="stats-bar" id="statsBar"></div>
-
   <div class="doc-list" id="docList"></div>
   <div class="no-result" id="noResult">ไม่พบเอกสารที่ค้นหา</div>
 </div>
@@ -230,7 +199,7 @@
     <div class="pdf-header">
       <div class="pdf-title" id="pdfTitle"></div>
       <div class="pdf-header-actions">
-        <a class="pdf-action-btn pdf-dl-btn" id="pdfDlBtn" download>
+        <a class="pdf-action-btn pdf-dl-btn" id="pdfDlBtn" target="_blank">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
@@ -245,37 +214,51 @@
       </div>
     </div>
     <div class="pdf-body">
-      <iframe id="pdfFrame" src="" title="PDF Viewer"></iframe>
+      <iframe id="pdfFrame" src="" title="PDF Viewer" allow="autoplay"></iframe>
     </div>
   </div>
 </div>
 
 <script>
+// ── helper: แปลง Google Drive share link → preview / download ──
+function drivePreview(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/file/d/${m[1]}/preview` : url;
+}
+function driveDownload(url) {
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? `https://drive.google.com/uc?export=download&id=${m[1]}` : url;
+}
+
 // ════════════════════════════════════════════════════════════
-//  รายการเอกสาร — แก้ไขตรงนี้
-//  file: path ของไฟล์ใน GitHub เช่น "docs/ชื่อไฟล์.pdf"
+//  รายการเอกสาร — เพิ่ม/แก้ไขตรงนี้
+//  วางลิงค์ Google Drive share ได้เลย ไม่ต้องแปลง
 // ════════════════════════════════════════════════════════════
 const docs = [
-  { cat: "Accountant", name: "การเข้าตรวจสอบอุปกรณ์ของทางบัญชีประจำเดือน",                    file: "docs/[Accountant] การเข้าตรวจสอบอุปกรณ์ของทางบัญชีประจำเดือน.pdf" },
-  { cat: "Accountant", name: "การถ่ายรูปค่าไฟฟ้าของ True AIS DTac ทุกวันที่ 25",              file: "docs/[Accountant] การถ่ายรูปค่าไฟฟ้าของ True AIS DTac ทุกวันที่ 25.pdf" },
-  { cat: "Accountant", name: "การทำเอกสารค่า Internet True และค่าโทรศัพท์ True รายเดือน",    file: "docs/[Accountant] การทำเอกสารค่า Internet True และค่าโทรศัพท์ True รายเดือน.pdf" },
-  { cat: "AV",         name: "การตั้งค่าระบบไมค์โครโฟนที่ Meeting",                           file: "docs/[AV] การตั้งค่าระบบไมค์โครโฟนที่ Meeting.pdf" },
-  { cat: "Building",   name: "การเข้าอาคารเพื่อมาซ่อมหรือเปลี่ยนอุปกรณ์ของ True หรือ Vendor", file: "docs/[Building] การเข้าอาคารเพื่อมาซ่อมหรือเปลี่ยนอุปกรณ์ของ True หรือ Vendor อื่นๆ.pdf" },
-  { cat: "Building",   name: "หลักการแจ้งงานเวลาป้าย Pylon Sign เสีย",                        file: "docs/[Building] หลักการแจ้งงานเวลาป้าย Pylon Sign เสีย (ไม่ใช้).pdf" },
-  { cat: "CAD",        name: "Renew License AutoCAD at Kice",                                   file: "docs/[CAD] Renew License AutoCAD at Kice.pdf" },
-  { cat: "Comanche",   name: "โปรแกรม Comanche",                                               file: "docs/[Comanche] โปรแกรม Comanche.pdf" },
-  { cat: "Comanche",   name: "การเบิกอุปกรณ์สำนักงาน",                                        file: "docs/[Comanche] การเบิกอุปกรณ์สำนักงาน.pdf" },
-  { cat: "Comanche",   name: "ทำลายเช็นดิจิตัลลง Comanche",                                   file: "docs/[Comanche] ทำลายเช็นดิจิตัลลง Comanche.pdf" },
-  { cat: "Comanche",   name: "วิธี Reset ตัว AR ใน Comanche",                                  file: "docs/[Comanche] วิธี Reset ตัว AR ใน Comanche (ไม่ใช้).pdf" },
-  { cat: "Comanche",   name: "ออก PR สั่งซื้อของผ่านระบบ Comanche",                           file: "docs/[Comanche] ออก PR สั่งซื้อของผ่านระบบ Comanche.pdf" },
-  { cat: "Computer",   name: "ใช้ Remote Desktop ไม่ได้หลังติดตั้ง Windows Updates",          file: "docs/[Computer] ใช้ Remote Desktop ไม่ได้หลังติดตั้ง Windows Updates.pdf" },
-  { cat: "Computer",   name: "การเพิ่ม User ของพนักงานให้สามารถเข้าคอมหรือ internet ได้",    file: "docs/[Computer] การเพิ่ม User ของพนักงานให้สามารถเข้าคอมหรือ internet ได้.pdf" },
-  { cat: "Computer",   name: "การต่อไมค์ Logitech กับ Notebook ในห้องประชุม",                file: "docs/[Computer] การต่อไมค์ Logitech กับ Notebook ในห้องประชุม.pdf" },
-  { cat: "Computer",   name: "การสร้าง Shared Folder 10.31.10.10",                            file: "docs/[Computer] การสร้าง Shared Folder 10.31.10.10.pdf" },
-  { cat: "Computer",   name: "คู่มือการตั้งค่า Access Control - Front Office",               file: "docs/[Computer] คู่มือการตั้งค่า Access Control - Front Office.pdf" },
-  { cat: "Computer",   name: "ระบบจองรถ",                                                      file: "https://drive.google.com/file/d/1BAfEbTNShQ9TEJW1IXuIOUIEV7S_Wk0F/preview" },
-  { cat: "Contract",   name: "EzMemo inter font Final",                                         file: "docs/[Contract] EzMemo inter font Final.pdf" },
-  { cat: "Email",      name: "Backup Email",                                                    file: "docs/[Email] Backup Email.pdf" },
+  { cat: "Accountant", name: "การเข้าตรวจสอบอุปกรณ์ของทางบัญชีประจำเดือน",                        url: "https://drive.google.com/file/d/1pn_sUBjaeN0bKVLUIW-6ScNiu05o_Yfw/view?usp=sharing" },
+  { cat: "Accountant", name: "การถ่ายรูปค่าไฟฟ้าของ True AIS DTac ทุกวันที่ 25 ของเดือน",        url: "https://drive.google.com/file/d/1SeXHjm4JsuTHZJtP1Ce7pcbOo4VIxEcv/view?usp=sharing" },
+  { cat: "Accountant", name: "การทำเอกสารค่า Internet True และค่าโทรศัพท์ True รายเดือน",         url: "https://drive.google.com/file/d/1P_PGEq6MKKb_y0iiqtuzd93ksqySvExV/view?usp=sharing" },
+  { cat: "AV",         name: "การตั้งค่าระบบไมค์โครโฟนที่ Meeting",                               url: "https://drive.google.com/file/d/1bUez3I-RX5tRujHVvxm-5hjqWaSrS_Cu/view?usp=sharing" },
+  { cat: "Building",   name: "การเข้าอาคารเพื่อมาซ่อมหรือเปลี่ยนอุปกรณ์ของ True หรือ Vendor อื่นๆ", url: "https://drive.google.com/file/d/19-_9mQ0NPJ68BuDA9s5dZcrbBpsaDBJJ/view?usp=sharing" },
+  { cat: "Building",   name: "หลักการแจ้งงานเวลาป้าย Pylon Sign เสีย",                            url: "https://drive.google.com/file/d/12fyJXZavBQU-G6ioq67FT02czKG13J43/view?usp=sharing" },
+  { cat: "CAD",        name: "Renew License AutoCAD at Kice",                                       url: "https://drive.google.com/file/d/1A_ZOQRrCKmC8yHJFFPOEn14lWFY5P3rg/view?usp=sharing" },
+  { cat: "Comanche",   name: "การเบิกอุปกรณ์สำนักงาน",                                            url: "https://drive.google.com/file/d/17h8mM7ghwpEEpjhsC_kIB0D9xAQZANmW/view?usp=sharing" },
+  { cat: "Comanche",   name: "การยกเลิกสิทธ์การแก้ไขใน Receive Order บน Comanche Inventory",      url: "https://drive.google.com/file/d/1agnKE4T2Bwfg55vGsVhcmDx-pKtEyt19/view?usp=sharing" },
+  { cat: "Comanche",   name: "ดึง Report Item จาก Inventory Comanche",                             url: "https://drive.google.com/file/d/1nOK6wiGvnSYm7eLHm3ntiOlwN7zxeiSv/view?usp=sharing" },
+  { cat: "Comanche",   name: "ทำลายเซ็นดิจิตัลลง Comanche",                                       url: "https://drive.google.com/file/d/1R89ldHPgC8ymQlP1MKTp4qa96kAg-Map/view?usp=sharing" },
+  { cat: "Comanche",   name: "โปรแกรม Comanche",                                                   url: "https://drive.google.com/file/d/1YY8I1p1EYiG-YpomatKme5x7Xw2MiDlE/view?usp=sharing" },
+  { cat: "Comanche",   name: "ออก PR สั่งซื้อของผ่านระบบ Comanche",                               url: "https://drive.google.com/file/d/1Nqrg0QZWF5zoAaEdleFcdDeJ_PsDI16m/view?usp=sharing" },
+  { cat: "Computer",   name: "Access Control Front Office",                                         url: "https://drive.google.com/file/d/14X2wd1zUMtkYQMfmfReaDIMAivkesTFx/view?usp=sharing" },
+  { cat: "Computer",   name: "การสร้าง Shared Folder 10.31.10.10",                                 url: "https://drive.google.com/file/d/10qwKSn7p4muS6ru_X1i30KXfdo5BmlIh/view?usp=sharing" },
+  { cat: "Computer",   name: "ระบบจองรถ",                                                          url: "https://drive.google.com/file/d/1BAfEbTNShQ9TEJW1IXuIOUIEV7S_Wk0F/view?usp=sharing" },
+  { cat: "Contract",   name: "EzMemo inter font Final",                                             url: "https://drive.google.com/file/d/1dg8y1Ne60uyYCunWBO4y5zeLylE9sjYr/view?usp=sharing" },
+  { cat: "Email",      name: "Backup Email",                                                        url: "https://drive.google.com/file/d/1jl5k4oXOXEsItJaZw-TiVQJ8Yd9-Vu7C/view?usp=sharing" },
+  { cat: "Email",      name: "การแจ้งขอ Email @cpland.co.th ให้พนักงานใหม่",                      url: "https://drive.google.com/file/d/1ltNff0Ul-yB6P4AV4pn2-qpQeNWLurZ6/view?usp=sharing" },
+  { cat: "Food Hall",  name: "Verifone VX520 ขึ้น Bach full must settle",                          url: "https://drive.google.com/file/d/15SxwdJLeZgcDdYt2T_xbP67CGJmoGrcy/view?usp=sharing" },
+  { cat: "Food Hall",  name: "การปิดผลัดวันเครื่อง POS เครื่องเติมเงิน เครื่อง SC และ Gen ข้อมูล", url: "https://drive.google.com/file/d/1ibuDO2qBZxSF9dCg1pzmwzvH3b7_9Tui/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น P400 NOT CONNECT",             url: "https://drive.google.com/file/d/10480zD1FSnyuPyJK4Zif2o4LU77CpiFV/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น TAMPER Please Enter Password", url: "https://drive.google.com/file/d/1b3yC0lmuV9J8dQW6CvOEY1C3loV1EWVD/view?usp=sharing" },
+  { cat: "Food Hall",  name: "เมื่อเครื่อง EDC Verifone VX520 ขึ้น P400 NOT CONNECT (2)",        url: "https://drive.google.com/file/d/1MOVM0m609oCEw_WT-45R533MknD7EQoW/view?usp=sharing" },
 ];
 
 // ── หมวดหมู่ ──
@@ -316,7 +299,7 @@ docs.forEach((doc, i) => {
         </svg>
         ดู
       </button>
-      <a class="doc-btn doc-btn-dl" href="${doc.file}" download>
+      <a class="doc-btn doc-btn-dl" href="${driveDownload(doc.url)}" target="_blank">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
@@ -349,9 +332,8 @@ applyFilters();
 function openPdf(i) {
   const doc = docs[i];
   document.getElementById('pdfTitle').textContent = doc.name;
-  document.getElementById('pdfFrame').src = doc.file;
-  document.getElementById('pdfDlBtn').href = doc.file;
-  document.getElementById('pdfDlBtn').download = doc.name + '.pdf';
+  document.getElementById('pdfFrame').src = drivePreview(doc.url);
+  document.getElementById('pdfDlBtn').href = driveDownload(doc.url);
   document.getElementById('pdfOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
