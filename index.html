@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Kice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 52px;
+    border-bottom: 1px solid #e8e8e8;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 10;
+  }
+  .topbar-logo {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: -0.02em;
+  }
+  .topbar-logo span {
+    color: #9b9b9b;
+    font-weight: 400;
+  }
+  .topbar-date {
+    font-size: 13px;
+    color: #9b9b9b;
+  }
+
+  /* Main layout */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 64px 40px 80px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 52px;
+  }
+  .header-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9b9b9b;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .header-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .header-sub {
+    font-size: 15px;
+    color: #6b6b6b;
+    line-height: 1.6;
+  }
+  .header-divider {
+    margin-top: 32px;
+    border: none;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #b0b0b0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    margin-top: 44px;
+  }
+  .section-label:first-of-type {
+    margin-top: 0;
+  }
+
+  /* Card grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  /* Card */
+  .card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    background: #ffffff;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+  .card:hover {
+    border-color: #c8c8c8;
+    background: #fafafa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card-icon {
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .card-body {}
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: #9b9b9b;
+    line-height: 1.5;
+  }
+
+  /* Card variants */
+  .card.soon {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .card.soon:hover {
+    border-color: #e8e8e8;
+    background: #ffffff;
+    box-shadow: none;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    color: #b0b0b0;
+    background: #f2f2f2;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid #e8e8e8;
+    font-size: 12px;
+    color: #c0c0c0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .topbar { padding: 0 20px; }
+    .container { padding: 40px 20px 60px; }
+    .grid { grid-template-columns: 1fr; }
+    .header-title { font-size: 26px; }
+    .footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">Internal Kice <span>/ หน้าหลัก</span></div>
+  <div class="topbar-date" id="today"></div>
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-eyebrow">Internal Tools</div>
+    <h1 class="header-title">Internal Kice</h1>
+    <p class="header-sub">ระบบภายในสำหรับทีม — เลือกหัวข้อที่ต้องการด้านล่างได้เลย</p>
+    <hr class="header-divider">
+  </div>
+
+  <!-- Section: ข้อมูลและบันทึก -->
+  <div class="section-label">ข้อมูลและบันทึก</div>
+  <div class="grid">
+
+    <a class="card" href="employees.html">
+      <div class="card-icon">👤</div>
+      <div class="card-body">
+        <div class="card-title">ข้อมูลพนักงาน</div>
+        <div class="card-desc">รายชื่อ ตำแหน่ง และข้อมูลติดต่อของทีม</div>
+      </div>
+    </a>
+
+    <a class="card" href="computers.html">
+      <div class="card-icon">💻</div>
+      <div class="card-body">
+        <div class="card-title">บันทึกอุปกรณ์คอมพิวเตอร์</div>
+        <div class="card-desc">ทะเบียนอุปกรณ์และผู้รับผิดชอบ</div>
+      </div>
+    </a>
+
+    <a class="card" href="repairs.html">
+      <div class="card-icon">🔧</div>
+      <div class="card-body">
+        <div class="card-title">บันทึกการซ่อม</div>
+        <div class="card-desc">ประวัติและสถานะการซ่อมแซมต่างๆ</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Section: บริการ -->
+  <div class="section-label">บริการ</div>
+  <div class="grid">
+
+    <a class="card" href="car-booking.html">
+      <div class="card-icon">🚗</div>
+      <div class="card-body">
+        <div class="card-title">จองรถออฟฟิศ</div>
+        <div class="card-desc">ตรวจสอบและจองรถสำหรับการเดินทาง</div>
+      </div>
+    </a>
+
+    <a class="card" href="knowledge.html">
+      <div class="card-icon">📚</div>
+      <div class="card-body">
+        <div class="card-title">Knowledge Management</div>
+        <div class="card-desc">คู่มือ ขั้นตอน และเอกสารภายในทีม</div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Section: เพิ่มเติม -->
+  <div class="section-label">เพิ่มเติม</div>
+  <div class="grid">
+
+    <div class="card soon">
+      <div class="card-icon">➕</div>
+      <div class="card-body">
+        <div class="card-title">เพิ่มหน้าใหม่ <span class="badge">เร็วๆ นี้</span></div>
+        <div class="card-desc">สำหรับฟีเจอร์ที่จะเพิ่มในอนาคต</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Internal Kice — ใช้ภายในบริษัทเท่านั้น</span>
+    <span id="year"></span>
+  </div>
+
+</div>
+
+<script>
+  // Show today's date in Thai
+  const d = new Date();
+  const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  document.getElementById('today').textContent =
+    `วัน${days[d.getDay()]}ที่ ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+  document.getElementById('year').textContent = `© ${d.getFullYear()} Internal Kice`;
+</script>
+
+</body>
+</html>
